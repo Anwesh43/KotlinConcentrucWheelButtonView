@@ -28,7 +28,7 @@ class ConcentricWheelButtonView (ctx : Context) : View(ctx) {
 
     data class State (var prevScale : Float = 0f, var dir : Float = 0f, var j : Int = 0) {
 
-        private val scales : Array<Float> = arrayOf(0f, 0f, 0f, 0f)
+        val scales : Array<Float> = arrayOf(0f, 0f, 0f, 0f)
 
         fun update(stopcb : (Float) -> Unit) {
             scales[j] += 0.1f * dir
@@ -74,5 +74,40 @@ class ConcentricWheelButtonView (ctx : Context) : View(ctx) {
                 animated = false
             }
         }
+    }
+
+    data class ConcentricWheelButton(var i : Int, val state : State = State()) {
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            val w : Float = canvas.width.toFloat()
+            val h : Float = canvas.height.toFloat()
+            val r : Float = Math.min(w, h) * 0.4f
+            val r1 : Float = Math.min(w, h) * 0.3f
+            val r2 : Float = Math.min(w, h)/30
+            paint.color = Color.WHITE
+            paint.style = Paint.Style.STROKE
+            canvas.save()
+            canvas.translate(w/2, h/2)
+            paint.strokeWidth = Math.min(w, h) / 60
+            canvas.drawArc(RectF(-r, -r, r, r), 0f, 360f * state.scales[0], false, paint)
+            paint.strokeWidth = Math.min(w, h) / 10
+            canvas.drawArc(RectF(-r1, -r1, r1, r1), 0f, 360f * state.scales[1], false, paint)
+            for (i in 0..2) {
+                canvas.save()
+                canvas.rotate(i * 120f + 120f * state.scales[3])
+                canvas.drawCircle(0f, -r1/4, r2 * state.scales[2], paint)
+                canvas.restore()
+            }
+            canvas.restore()
+        }
+
+        fun update(stopcb : (Float) -> Unit) {
+            state.update(stopcb)
+        }
+
+        fun startUpdating(startcb : () -> Unit) {
+            state.startUpdating(startcb)
+        }
+
     }
 }
