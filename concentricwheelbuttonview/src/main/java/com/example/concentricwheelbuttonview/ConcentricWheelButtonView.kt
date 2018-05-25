@@ -4,6 +4,7 @@ package com.example.concentricwheelbuttonview
  * Created by anweshmishra on 26/05/18.
  */
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.MotionEvent
@@ -132,6 +133,14 @@ class ConcentricWheelButtonView (ctx : Context) : View(ctx) {
             wheelButton.startUpdating {
                 animator.start()
             }
+        }
+    }
+
+    companion object {
+        fun create(activity : Activity) : ConcentricWheelButtonView {
+            val view : ConcentricWheelButtonView = ConcentricWheelButtonView(activity)
+            activity.setContentView(view)
+            return view
         }
     }
 }
