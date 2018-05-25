@@ -108,6 +108,28 @@ class ConcentricWheelButtonView (ctx : Context) : View(ctx) {
         fun startUpdating(startcb : () -> Unit) {
             state.startUpdating(startcb)
         }
+    }
 
+    data class Renderer(var view : ConcentricWheelButtonView) {
+
+        private val animator : Animator = Animator(view)
+
+        private val wheelButton : ConcentricWheelButton = ConcentricWheelButton(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(Color.parseColor("#1A237E"))
+            wheelButton.draw(canvas, paint)
+            animator.animate {
+                wheelButton.update {
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            wheelButton.startUpdating {
+                animator.start()
+            }
+        }
     }
 }
