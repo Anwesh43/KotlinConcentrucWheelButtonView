@@ -37,9 +37,13 @@ class ConcentricWheelButtonView (ctx : Context) : View(ctx) {
             scales[j] += 0.1f * dir
             if (Math.abs(scales[j] - prevScale) > 1) {
                 scales[j] = prevScale + dir
-                dir = 0f
-                prevScale = scales[j]
-                stopcb(prevScale)
+                j += dir.toInt()
+                if (j == -1 || j == scales.size) {
+                    j -= dir.toInt()
+                    dir = 0f
+                    prevScale = scales[j]
+                    stopcb(prevScale)
+                }
             }
         }
 
@@ -95,6 +99,7 @@ class ConcentricWheelButtonView (ctx : Context) : View(ctx) {
             canvas.drawArc(RectF(-r, -r, r, r), 0f, 360f * state.scales[0], false, paint)
             paint.strokeWidth = Math.min(w, h) / 10
             canvas.drawArc(RectF(-r1, -r1, r1, r1), 0f, 360f * state.scales[1], false, paint)
+            paint.strokeWidth = Math.min(w, h) / 60
             for (i in 0..2) {
                 canvas.save()
                 canvas.rotate(i * 120f + 120f * state.scales[3])
