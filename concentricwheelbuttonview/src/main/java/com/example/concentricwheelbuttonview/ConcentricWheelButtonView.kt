@@ -29,20 +29,31 @@ class ConcentricWheelButtonView (ctx : Context) : View(ctx) {
         return true
     }
 
-    data class State (var prevScale : Float = 0f, var dir : Float = 0f, var j : Int = 0) {
+    data class State (var prevScale : Float = 0f, var dir : Float = 0f, var j : Int = 0, var delay : Int = 0) {
 
         val scales : Array<Float> = arrayOf(0f, 0f, 0f, 0f)
 
+        val MAX_DELAY : Int = 10
+
         fun update(stopcb : (Float) -> Unit) {
-            scales[j] += 0.1f * dir
-            if (Math.abs(scales[j] - prevScale) > 1) {
-                scales[j] = prevScale + dir
-                j += dir.toInt()
-                if (j == -1 || j == scales.size) {
-                    j -= dir.toInt()
-                    dir = 0f
-                    prevScale = scales[j]
-                    stopcb(prevScale)
+            if (delay == 0) {
+                scales[j] += 0.1f * dir
+                if (Math.abs(scales[j] - prevScale) > 1) {
+                    scales[j] = prevScale + dir
+                    delay++
+                }
+            }
+            else {
+                delay++
+                if (delay == MAX_DELAY) {
+                    j += dir.toInt()
+                    delay = 0
+                    if (j == -1 || j == scales.size) {
+                        j -= dir.toInt()
+                        dir = 0f
+                        prevScale = scales[j]
+                        stopcb(prevScale)
+                    }
                 }
             }
         }
@@ -93,6 +104,7 @@ class ConcentricWheelButtonView (ctx : Context) : View(ctx) {
             val r2 : Float = Math.min(w, h)/30
             paint.color = Color.WHITE
             paint.style = Paint.Style.STROKE
+            paint.strokeCap = Paint.Cap.ROUND
             canvas.save()
             canvas.translate(w/2, h/2)
             paint.strokeWidth = Math.min(w, h) / 60
