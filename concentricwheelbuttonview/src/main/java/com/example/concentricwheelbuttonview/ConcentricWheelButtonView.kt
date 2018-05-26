@@ -16,6 +16,12 @@ class ConcentricWheelButtonView (ctx : Context) : View(ctx) {
 
     private val renderer : Renderer = Renderer(this)
 
+    private var onAnimationListener : OnAnimationListener? = null
+
+    fun addOnAnimationListener(onComplete : () -> Unit, onReset : () -> Unit) {
+        onAnimationListener = OnAnimationListener(onComplete, onReset)
+    }
+
     override fun onDraw(canvas : Canvas) {
         renderer.render(canvas, paint)
     }
@@ -141,6 +147,10 @@ class ConcentricWheelButtonView (ctx : Context) : View(ctx) {
             wheelButton.draw(canvas, paint)
             animator.animate {
                 wheelButton.update {
+                    when (it) {
+                        0f -> view?.onAnimationListener?.onReset?.invoke()
+                        1f -> view?.onAnimationListener?.onComplete?.invoke()
+                    }
                     animator.stop()
                 }
             }
@@ -160,4 +170,6 @@ class ConcentricWheelButtonView (ctx : Context) : View(ctx) {
             return view
         }
     }
+
+    data class OnAnimationListener(var onComplete : () -> Unit, var onReset : () -> Unit)
 }
